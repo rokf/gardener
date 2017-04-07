@@ -347,7 +347,7 @@ function add_log(category)
     txt = txt,
     cat = category,
     scope = state.cs,
-    date = os.date()
+    date = os.date("%d.%m.%y %H:%M")
   })
   ltxv.buffer.text = ''
 end

@@ -26,5 +26,6 @@ build = {
   },
   install = {
     bin = { "bin/gardener" }
-  }
+  },
+  copy_directories = { "images" }
 }
