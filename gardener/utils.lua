@@ -56,7 +56,8 @@ function utils.update_log_lsbx(lsbx,log,filter)
           margin = 10,
           icon,
           Gtk.Label {
-            label = v.date
+            label = v.date,
+            margin_right = 5
           },
           Gtk.Label {
             label = v.scope

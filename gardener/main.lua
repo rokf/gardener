@@ -164,7 +164,7 @@ function draw_rect(widget,x,y,w,h)
   cr:set_source_rgb(0,0,0)
   cr:rectangle(x,y,w,h)
   cr:stroke()
-  widget:queue_draw()
+  -- widget:queue_draw()
 end
 
 function draw_sections()
@@ -181,8 +181,15 @@ function draw_sections()
       }
       cr:rectangle(rect)
       cr:stroke()
+      cr:set_font_size(14)
+      cr.font_face = cairo.ToyFontFace.create("Times New Roman", cairo.FontSlant.NORMAL, cairo.FontWeight.NORMAL)
+      local extents = cr:text_extents(k)
+      local hpos = (rect.x + rect.width/2) - (extents.width/2 + extents.x_bearing)
+      local vpos = rect.y + rect.height/2
+      cr:move_to(hpos,vpos)
+      cr:show_text(k)
     end
-    canvas:queue_draw()
+    -- canvas:queue_draw()
   end
 end
 
@@ -415,7 +422,7 @@ gbox = Gtk.Box {
   Gtk.Paned {
     orientation = 'HORIZONTAL',
     Gtk.Box {
-      -- expand = true,
+      width_request = 300,
       margin = 20,
       orientation = 'VERTICAL',
       -- smbox,
@@ -456,8 +463,8 @@ stack:add_titled(gsbox, "gsbox", "Garden Selection")
 stack:add_titled(gbox, "gbox", "Garden")
 
 window = Gtk.Window {
-  default_width = 800,
-  default_height = 600,
+  default_width = 1024,
+  default_height = 768,
   stack
 }
 
