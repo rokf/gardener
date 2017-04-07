@@ -118,6 +118,7 @@ glst = Gtk.ListBox {
     -- cnvsw.height = data[state.ci].height * 10
     sbbutton.sensitive = true
     window.title = name
+    utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
   end,
 }
 
@@ -238,6 +239,7 @@ function canvas:on_button_press_event(event)
             on_clicked = function (btn)
               state.cs = csec
               cslab.label = csec
+              utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
               popover:hide()
             end
           },
@@ -267,6 +269,7 @@ function canvas:on_button_press_event(event)
       else
         state.cs = 'full'
         cslab.label = 'full'
+        utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
       end
     end
   end
@@ -346,19 +349,32 @@ function add_log(category)
     scope = state.cs,
     date = os.date()
   })
+  ltxv.buffer.text = ''
 end
 
 lbbox = Gtk.Box { -- LINKED BUTTONS
   margin_bottom = 5,
   margin_top = 5,
   Gtk.Button {
-    label = 'Water'
+    label = 'Water',
+    on_clicked = function (btn)
+      add_log('Water')
+      utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
+    end
   },
   Gtk.Button {
-    label = 'Plant'
+    label = 'Plant',
+    on_clicked = function (btn)
+      add_log('Plant')
+      utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
+    end
   },
   Gtk.Button {
-    label = 'Note'
+    label = 'Note',
+    on_clicked = function (btn)
+      add_log('Note')
+      utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
+    end
   },
 }
 
