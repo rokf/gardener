@@ -8,6 +8,7 @@ config:
 	echo 'return {}' > ~/.config/gardener/conf.lua
 install:
 	luarocks install "gardener-dev-1.rockspec"
+	cp -r images ~/.config/gardener
 remove:
 	luarocks remove gardener
 	rm -r ~/.config/gardener

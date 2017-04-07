@@ -18,7 +18,7 @@ function utils.update_lsbx(lsbx,data)
       -- icon_name = 'edit-delete-symbolic',
       relief = 'NONE',
       Gtk.Image {
-        file = 'images/trash-2x.png'
+        file = imagepath .. 'trash-2x.png'
       },
       on_clicked = function (btn)
         local index = row:get_index()
@@ -44,11 +44,11 @@ function utils.update_log_lsbx(lsbx,log,filter)
         }
 
         if v.cat == "Water" then
-          icon.file = 'images/droplet-2x.png'
+          icon.file = imagepath .. 'droplet-2x.png'
         elseif v.cat == "Plant" then
-          icon.file = 'images/arrow-bottom-2x.png'
+          icon.file = imagepath .. 'arrow-bottom-2x.png'
         elseif v.cat == "Note" then
-          icon.file = 'images/text-2x.png'
+          icon.file = imagepath .. 'text-2x.png'
         end
 
         local box = Gtk.Box {

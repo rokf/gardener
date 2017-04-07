@@ -23,6 +23,8 @@ local ltxv
 local wentry, hentry, whbox
 local cslab -- current section label
 
+imagepath = os.getenv('HOME')..'/.config/gardener/images/'
+
 local cfgpath = os.getenv('HOME')..'/.config/gardener/conf.lua'
 data = dofile(cfgpath)
 
