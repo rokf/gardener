@@ -207,6 +207,7 @@ function canvas:on_configure_event(event)
 end
 
 function canvas:on_draw(cr)
+  clear_surface()
   draw_rect(canvas, 20,20, data[state.ci].width * 20, data[state.ci].height * 20)
   draw_sections()
   cr:set_source_surface(surface,0,0)

@@ -15,7 +15,6 @@ function utils.update_lsbx(lsbx,data)
       }
     }
     box:pack_end(Gtk.Button {
-      -- icon_name = 'edit-delete-symbolic',
       relief = 'NONE',
       Gtk.Image {
         file = imagepath .. 'trash-2x.png'
@@ -57,20 +56,32 @@ function utils.update_log_lsbx(lsbx,log,filter)
           icon,
           Gtk.Label {
             label = v.date,
-            margin_right = 5
+            margin_right = 10
           },
           Gtk.Label {
             label = v.scope
           }
         }
+
+        box:pack_end(Gtk.Button {
+          relief = 'NONE',
+          Gtk.Image {
+            file = imagepath .. 'trash-2x.png'
+          },
+          on_clicked = function (btn)
+            table.remove(log,i)
+            lsbx:remove(row)
+          end
+        },false,false,0)
+
         if #v.txt > 0 then
           local txtview = Gtk.TextView {}
           txtview.buffer.text = v.txt
           box:pack_end(txtview,false,false,0)
         end
+
         row:add(box)
         lsbx:insert(row,-1)
-        lsbx:insert(Gtk.Separator(),-1)
       end
     end
   end
