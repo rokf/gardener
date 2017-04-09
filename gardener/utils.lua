@@ -88,4 +88,12 @@ function utils.update_log_lsbx(lsbx,log,filter)
   lsbx:show_all()
 end
 
+function utils.ceilfloor(num)
+  if (num - math.floor(num)) >= 0.5 then
+    return math.ceil(num)
+  else
+    return math.floor(num)
+  end
+end
+
 return utils

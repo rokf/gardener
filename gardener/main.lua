@@ -10,7 +10,9 @@ state = {
   ci = 0, -- current index
   cs = "full",
   cp = {}, -- click point
-  rp = {} -- release point
+  rp = {}, -- release point
+  cup = {}, -- cursor position
+  draw_preview = false
 }
 
 local window, header, stack, canvas, cnvsw, surface
@@ -157,9 +159,6 @@ canvas:override_background_color(0, Gdk.RGBA { red = 1, green = 1, blue = 1, alp
 
 function draw_rect(widget,x,y,w,h)
   local cr = cairo.Context(surface)
-  -- cr:rectangle(Gdk.Rectangle {
-  --   x,y,w,h
-  -- })
   cr.line_width = 1
   cr:set_source_rgb(0,0,0)
   cr:rectangle(x,y,w,h)
@@ -199,6 +198,21 @@ function clear_surface()
   cr:paint()
 end
 
+function draw_preview()
+  local rect = Gdk.Rectangle {
+    x = state.cp[1]*20+20,
+    y = state.cp[2]*20+20,
+    width = (state.cup[1]-state.cp[1])*20,
+    height = (state.cup[2]-state.cp[2])*20
+  }
+  print('motion rect',state.cp[1],state.cp[2],state.cup[1],state.cup[2])
+  local cr = cairo.Context(surface)
+  cr.line_width = 1
+  cr:set_source_rgb(0.741,0.882,0.341)
+  cr:rectangle(rect)
+  cr:fill()
+end
+
 function canvas:on_configure_event(event)
   local allocation = self.allocation
   surface = self.window:create_similar_surface('COLOR', allocation.width, allocation.height)
@@ -210,14 +224,17 @@ function canvas:on_draw(cr)
   clear_surface()
   draw_rect(canvas, 20,20, data[state.ci].width * 20, data[state.ci].height * 20)
   draw_sections()
+  if state.draw_preview then
+    draw_preview()
+  end
   cr:set_source_surface(surface,0,0)
   cr:paint()
   return true
 end
 
 function canvas:on_button_press_event(event)
-  local x = math.floor(math.floor(event.x - 20) / 20)
-  local y = math.floor(math.floor(event.y - 20) / 20)
+  local x = utils.ceilfloor(math.floor(event.x - 20) / 20)
+  local y = utils.ceilfloor(math.floor(event.y - 20) / 20)
   if event.button == Gdk.BUTTON_PRIMARY then
     print('click!',x,y)
     -- draw_rect(self,x*20+20,y*20+20,2,2)
@@ -226,7 +243,7 @@ function canvas:on_button_press_event(event)
     if data[state.ci].sections ~= nil then
       local csec,popover
       for k,v in pairs(data[state.ci].sections) do
-        if x > v[1] and y > v[2] and x < v[3] and y < v[4] then
+        if x >= v[1] and y >= v[2] and x < v[3] and y < v[4] then
           csec = k
           print('clicked inside:', k)
           break
@@ -287,12 +304,23 @@ function canvas:on_button_press_event(event)
 end
 
 function canvas:on_button_release_event(event)
-  local x = math.floor(math.floor(event.x - 20) / 20)
-  local y = math.floor(math.floor(event.y - 20) / 20)
+  local x = utils.ceilfloor(math.floor(event.x - 20) / 20)
+  local y = utils.ceilfloor(math.floor(event.y - 20) / 20)
   if event.button == Gdk.BUTTON_PRIMARY then
     state.rp = {x,y}
     print('release!',x,y)
-    if state.cp[1] ~= state.rp[1] and state.cp[2] ~= state.rp[2] then
+    state.draw_preview = false
+
+    local overlaps = false
+    for k,v in pairs(data[state.ci].sections) do
+      if x >= v[1] and y >= v[2] and x <= v[3] and y <= v[4] then
+        overlaps = true
+        break
+      end
+    end
+
+    local is_inside = (state.rp[1] <= data[state.ci].width) and (state.rp[2] <= data[state.ci].height) and state.cp[1] >= 0 and state.cp[2] >= 0
+    if state.cp[1] < state.rp[1] and state.cp[2] < state.rp[2] and is_inside and (not overlaps) then
       local rect = Gdk.Rectangle {
         x = state.cp[1]*20+20,
         y = state.cp[2]*20+20,
@@ -329,9 +357,23 @@ function canvas:on_button_release_event(event)
         pobox
       }
       popover:show_all()
-
-      -- draw_rect(self,state.cp[1]*20+20,state.cp[2]*20+20,(state.rp[1]-state.cp[1])*20,(state.rp[1]-state.cp[1])*20)
     end
+  end
+  return true
+end
+
+function canvas:on_motion_notify_event(event)
+  local _,x,y,st = event.window:get_device_position(event.device)
+  local xc = utils.ceilfloor(math.floor(x - 20) / 20)
+  local yc = utils.ceilfloor(math.floor(y - 20) / 20)
+  if st.BUTTON1_MASK then
+    state.cup = {xc,yc}
+    -- clear_surface()
+    -- draw_rect(canvas, 20,20, data[state.ci].width * 20, data[state.ci].height * 20)
+    -- draw_sections()
+    -- draw_preview()
+    canvas:queue_draw()
+    state.draw_preview = true
   end
   return true
 end
