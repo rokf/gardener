@@ -69,8 +69,10 @@ function utils.update_log_lsbx(lsbx,log,filter)
             file = imagepath .. 'trash-2x.png'
           },
           on_clicked = function (btn)
+            print('remove-log-i:',i)
             table.remove(log,i)
             lsbx:remove(row)
+            utils.update_log_lsbx(lsbx,log,filter) -- needs redraw because of the index i used here
           end
         },false,false,0)
 

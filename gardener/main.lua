@@ -313,7 +313,8 @@ function canvas:on_button_release_event(event)
 
     local overlaps = false
     for k,v in pairs(data[state.ci].sections) do
-      if x >= v[1] and y >= v[2] and x <= v[3] and y <= v[4] then
+      if x > v[1] and y > v[2] and x <= v[3] and y <= v[4] then -- >= >= <= <=
+        print(k,'x:',x,'y:',y,'x:',v[1],'y:',v[2],'x:',v[3],'y:',v[4])
         overlaps = true
         break
       end
@@ -330,7 +331,17 @@ function canvas:on_button_release_event(event)
 
       local popover, sece
 
-      sece = Gtk.Entry { placeholder_text = 'Name' }
+      sece = Gtk.Entry {
+        placeholder_text = 'Name',
+        on_activate = function (entry)
+          if data[state.ci].sections == nil then
+            data[state.ci].sections = {}
+          end
+          data[state.ci].sections[sece.text] = { state.cp[1],state.cp[2],state.rp[1],state.rp[2] }
+          sece.text = ''
+          popover:hide()
+        end
+      }
       local pobox = Gtk.Box {
         orientation = 'VERTICAL',
         margin = 10,
@@ -448,13 +459,6 @@ ltxv = Gtk.TextView {
   wrap_mode = 'WORD_CHAR'
 }
 
--- smbox = Gtk.Box { -- section management box
---   orientation = 'HORIZONTAL',
---   margin_top = 5,
---   margin_bottom = 5,
---   Gtk.ComboBoxText {}
--- }
-
 cnvsw = Gtk.ScrolledWindow {
   expand = true,
   canvas
@@ -468,7 +472,6 @@ gbox = Gtk.Box {
       width_request = 300,
       margin = 20,
       orientation = 'VERTICAL',
-      -- smbox,
       Gtk.Frame {
         cnvsw
       }
