@@ -36,7 +36,7 @@ function utils.update_log_lsbx(lsbx,log,filter)
   if log ~= nil then
     lsbx:forall(function (element) lsbx:remove(element) end)
     for i,v in ipairs(log) do
-      if filter ~= nil and (filter == "full" or v.scope == filter) then
+      if filter ~= nil and (filter == "Everything" or v.scope == filter) then
         local row = Gtk.ListBoxRow {}
         local icon = Gtk.Image {
           margin_right = 5

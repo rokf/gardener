@@ -8,7 +8,7 @@ local utils = require 'gardener.utils'
 
 state = {
   ci = 0, -- current index
-  cs = "full",
+  cs = "Everything", -- current section
   cp = {}, -- click point
   rp = {}, -- release point
   cup = {}, -- cursor position
@@ -273,13 +273,14 @@ function canvas:on_button_press_event(event)
           Gtk.Button {
             label = 'Remove',
             on_clicked = function (btn)
-              if csec ~= 'full' then
+              if csec ~= 'Everything' then
                 data[state.ci].sections[csec] = nil
                 clear_surface()
                 draw_rect(canvas, 20,20, data[state.ci].width * 20, data[state.ci].height * 20)
                 draw_sections()
               end
               popover:hide()
+              canvas:queue_draw()
             end
           },
         }
@@ -294,12 +295,13 @@ function canvas:on_button_press_event(event)
         }
         popover:show_all()
       else
-        state.cs = 'full'
-        cslab.label = 'full'
+        state.cs = 'Everything'
+        cslab.label = 'Everything'
         utils.update_log_lsbx(llbox,data[state.ci].log,state.cs)
       end
     end
   end
+  -- canvas:queue_draw()
   return true
 end
 
@@ -355,6 +357,7 @@ function canvas:on_button_release_event(event)
             data[state.ci].sections[sece.text] = { state.cp[1],state.cp[2],state.rp[1],state.rp[2] }
             sece.text = ''
             popover:hide()
+            canvas:queue_draw()
           end
         },
       }
@@ -410,7 +413,7 @@ function add_log(category)
     txt = txt,
     cat = category,
     scope = state.cs,
-    date = os.date("%d.%m.%y %H:%M")
+    date = os.date("%d.%m.%y") -- %H:%M
   })
   ltxv.buffer.text = ''
 end
@@ -442,7 +445,7 @@ lbbox = Gtk.Box { -- LINKED BUTTONS
 }
 
 cslab = Gtk.Label {
-  label = 'full'
+  label = 'Everything'
 }
 
 lbbox:pack_end(cslab, false, false, 0)
